@@ -37,7 +37,7 @@ def main():
   round_xpath_to_int(root, './/tcd:Cadence')
 
   # Output to stdout
-  tree.write(sys.stdout)
+  tree.write(sys.stdout, encoding="UTF-8", xml_declaration=True)
 
 if __name__ == "__main__":
   main()
