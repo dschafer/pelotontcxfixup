@@ -28,6 +28,10 @@ def main():
   creator = activity.find('./tcd:Creator', ns)
   activity.remove(creator)
 
+  # The only valid sports are Running, Cycling, and Other.
+  if activity.get('Sport') not in ['Running', 'Cycling', 'Other']:
+    activity.set('Sport', 'Other')
+
   # Round these values to ints, since Garmin requires that
   round_xpath_to_int(root, './/ae:Watts')
   round_xpath_to_int(root, './/tcd:AverageHeartRateBpm/tcd:Value')
