@@ -29,7 +29,8 @@ def main():
   activity.remove(creator)
 
   # The only valid sports are Running, Cycling, and Other.
-  if activity.get('Sport') not in ['Running', 'Cycling', 'Other']:
+  # Peloton exports Biking, and Garmin will read that.
+  if activity.get('Sport') not in ['Running', 'Cycling', 'Biking', 'Other']:
     activity.set('Sport', 'Other')
 
   # Round these values to ints, since Garmin requires that
