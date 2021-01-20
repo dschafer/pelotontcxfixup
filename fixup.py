@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 import xml.etree.ElementTree as ET
@@ -20,13 +20,18 @@ def main():
   so that Garmin Connect will correctly parse it.
   """
   # Read the file from stdin
-  tree = ET.parse(sys.stdin)
-  root = tree.getroot()
+  # This does some chicanery to strip the leading whitespace that just
+  # started getting added.
+  root = ET.fromstring(sys.stdin.read().strip())
+  tree = ET.ElementTree(root)
 
   # Remove the creator tag, Garmin won't recognize that
   activity = root.find('./tcd:Activities/tcd:Activity', ns)
   creator = activity.find('./tcd:Creator', ns)
-  activity.remove(creator)
+  try:
+    activity.remove(creator)
+  except Exception:
+    pass
 
   # The only valid sports are Running, Cycling, and Other.
   # Peloton exports Biking, and Garmin will read that.
@@ -42,7 +47,7 @@ def main():
   round_xpath_to_int(root, './/tcd:Cadence')
 
   # Output to stdout
-  tree.write(sys.stdout, encoding="UTF-8", xml_declaration=True)
+  tree.write(sys.stdout.buffer, encoding="UTF-8", xml_declaration=True)
 
 if __name__ == "__main__":
   main()
