@@ -55,9 +55,9 @@ Importantly:
 ```lang=bash
 for f in "$@"
 do
-	python3 ~/Documents/fixup.py \
-      < "$f" \
-      > "$f.fixed.tcx"
+  python3 ~/Documents/fixup.py \
+    < "$f" \
+    > "$f.fixed.tcx"
 done
 ```
 
