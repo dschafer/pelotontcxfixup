@@ -14,15 +14,9 @@ def round_xpath_to_int(root, xpath):
   for e in root.findall(xpath, ns):
     e.text = str(int(float(e.text)))
 
-def main():
-  """
-  Reads a TCX file from Strava that Peloton uploaded, and modifies it
-  so that Garmin Connect will correctly parse it.
-  """
-  # Read the file from stdin
-  # This does some chicanery to strip the leading whitespace that just
-  # started getting added.
-  root = ET.fromstring(sys.stdin.read().strip())
+def fix_tcx(infile, outfile):
+  """Fixes a TCX file from Peloton to be spec compliant"""
+  root = ET.fromstring(infile.read().strip())
   tree = ET.ElementTree(root)
 
   # Remove the creator tag, Garmin won't recognize that
@@ -47,7 +41,10 @@ def main():
   round_xpath_to_int(root, './/tcd:Cadence')
 
   # Output to stdout
-  tree.write(sys.stdout.buffer, encoding="UTF-8", xml_declaration=True)
+  tree.write(outfile.buffer, encoding="UTF-8", xml_declaration=True)
+
+def main():
+  fix_tcx(sys.stdin, sys.stdout)
 
 if __name__ == "__main__":
   main()
