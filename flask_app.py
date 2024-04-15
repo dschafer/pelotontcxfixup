@@ -58,4 +58,5 @@ def home():
       <input type=file name=file>
       <input type=submit value="Upload TCX File">
     </form>
+    <p>Github source for this site and script: <a href="https://github.com/dschafer/pelotontcxfixup/">https://github.com/dschafer/pelotontcxfixup/</a></p>
     """
