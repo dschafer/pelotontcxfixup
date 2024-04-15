@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import sys
-from typing import TextIO
+from typing import TextIO, BinaryIO
 import xml.etree.ElementTree as ET
 
 ET.register_namespace("", "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2")
@@ -17,7 +17,7 @@ def round_xpath_to_int(root: ET.Element, xpath: str) -> None:
         e.text = str(int(float(str(e.text))))
 
 
-def fix_tcx(infile: TextIO, outfile: TextIO) -> None:
+def fix_tcx(infile: TextIO, outfile: BinaryIO) -> None:
     """Fixes a TCX file from Peloton to be spec compliant"""
     root = ET.fromstring(infile.read().strip())
     tree = ET.ElementTree(root)
@@ -48,11 +48,11 @@ def fix_tcx(infile: TextIO, outfile: TextIO) -> None:
     round_xpath_to_int(root, ".//tcd:Cadence")
 
     # Output to stdout
-    tree.write(outfile.buffer, encoding="UTF-8", xml_declaration=True)
+    tree.write(outfile, encoding="UTF-8", xml_declaration=True)
 
 
 def main():
-    fix_tcx(sys.stdin, sys.stdout)
+    fix_tcx(sys.stdin, sys.stdout.buffer)
 
 
 if __name__ == "__main__":
