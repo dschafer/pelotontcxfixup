@@ -1,7 +1,8 @@
 from io import BytesIO, StringIO
 import logging
 
-from flask import Flask, flash, request, redirect, send_file
+from flask import Flask, Request, flash, request, redirect, send_file
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 from fixup import fix_tcx
@@ -10,13 +11,15 @@ app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 
-def get_file(request):
+def get_file(request: Request) -> FileStorage:
+    """Returns the file from the request, or throws ValueError indicating an error."""
     if "file" not in request.files:
         raise ValueError("No file provided.")
     file = request.files["file"]
-    if "." not in file.filename:
+    filename = str(file.filename)
+    if "." not in filename:
         raise ValueError("File must be a .tcx file.")
-    if file.filename.rsplit(".", 1)[1].lower() != "tcx":
+    if filename.rsplit(".", 1)[1].lower() != "tcx":
         raise ValueError("File must be a .tcx file.")
     return file
 
@@ -35,14 +38,14 @@ def home():
 
         in_string = str(file.stream.read(), encoding="utf-8")
         logger.info(f"File size is {len(in_string)}.")
+
+        logger.info("Starting TCX conversion.")
         out_bytes_io = BytesIO()
-
         fix_tcx(StringIO(in_string), out_bytes_io)
-
         logger.info("TCX conversion complete.")
         logger.info(f"Output size is {out_bytes_io.getbuffer().nbytes}.")
 
-        download_name = secure_filename(file.filename) + ".fixed.tcx"
+        download_name = secure_filename(str(file.filename)) + ".fixed.tcx"
         logger.info(f"Returning as {download_name}.")
 
         out_bytes_io.seek(0)
