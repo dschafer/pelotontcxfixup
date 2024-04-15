@@ -1,5 +1,7 @@
 # Peloton TCX Fixup for Garmin
 
+**Quick start**: Go to https://dschafer.pythonanywhere.com/ which is a simple hosted version of this script.
+
 To get Peloton data into Garmin Connect, the easiest path is to connect Peloton and Strava via their built-in integration, then export the original TCX from Strava and import it into Garmin.
 
 Unfortunately, Garmin Connect won't correctly parse that TCX out of the box, because the TCX has some non-standard aspects to it.
