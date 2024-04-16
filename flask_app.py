@@ -30,7 +30,7 @@ def home():
         try:
             file = get_file(request)
             logger.info("File successfully read.")
-            logger.info(f"Filename was {secure_filename(file.filename)}.")
+            logger.info(f"Filename was {secure_filename(str(file.filename))}.")
         except ValueError:
             logger.warn("Invalid file uploaded.")
             flash("Invalid file.")
