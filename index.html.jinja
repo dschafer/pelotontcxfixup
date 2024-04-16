@@ -7,15 +7,12 @@
 
 <body>
     <h1>Fix Peloton TCX</h1>
-    <p>To get Peloton data into Garmin Connect, the easiest path is to connect Peloton and Strava via their built-in
-        integration, then export the original TCX from Strava and import it into Garmin.</p>
-    <p>Unfortunately, Garmin Connect won't correctly parse that TCX out of the box, because the TCX has some
-        non-standard aspects to it.</p>
-    <p>This script takes in one of those Peloton-to-Strava TCX files, fixes the aspects that Garmin Connect cannot
-        handle, and produces a new TCX file for import into Garmin.</p>
-    <form method=post enctype=multipart/form-data>
-        <input type=file name=file>
-        <input type=submit value="Upload TCX File">
+    <p>This site fixes the Peloton TCX files that you can export from Strava, allowing you to upload the fixed TCX file
+        to Garmin Connect.</p>
+    <h2>Conversion Form</h2>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".tcx">
+        <input type="submit" value="Download Fixed TCX">
     </form>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -26,8 +23,39 @@
     </ul>
     {% endif %}
     {% endwith %}
-    <p style="text-align: right">Github source for this site and script: <a
-            href="https://github.com/dschafer/pelotontcxfixup/">https://github.com/dschafer/pelotontcxfixup/</a></p>
+    <h2>Instructions</h2>
+    <p>Peloton doesn't let you download TCX files directly, but Strava does... so if your Peloton activites appear
+        in Strava, you can use Strava to get the activity file.</p>
+    <p>To do so, go to a Peloton activity in Strava and click the "three dots" icon on the bottom of the left-hand
+        column. Once you do so, you'll see an option to "Export Original".</p>
+    <img src="/static/export-original.png" alt="A screenshot showing where the 'Export Original' option is on Strava."
+        width="600" />
+    <p>When you click "Export Original", you'll see a .tcx file get downloaded. If you try and upload this file to
+        Garmin directly, it will fail. If you upload it to this site, you'll get a 'Fixed' version of the TCX, which can
+        then be uploaded to Garmin successfully.</p>
+
+    <h2>Fixes</h2>
+    <p>For those curious, these are the fixes performed by this script:</p>
+    <ul>
+        <li>Removes the non-standard "Creator" tag that Peloton includes.</li>
+        <li>Changes the sport from "Biking" (which is what Peloton includes) to "Cycling" (which is what the TCX
+            standard specifies).</li>
+        <li>Converts the following entries from floats (e.g. "77.0") to ints (e.g. "77"), as required by the TCX
+            specification:
+            <ul>
+                <li>Watts</li>
+                <li>Average Heart Rate</li>
+                <li>Maximum Heart Rate</li>
+                <li>Heart Rate</li>
+                <li>Calories</li>
+                <li>Cadence</li>
+            </ul>
+        </li>
+    </ul>
+    <footer>
+        <p style="text-align: right">Github source for this site and script: <a
+                href="https://github.com/dschafer/pelotontcxfixup/">https://github.com/dschafer/pelotontcxfixup/</a></p>
+    </footer>
 </body>
 
 </html>
