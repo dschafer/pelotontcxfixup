@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Fix Peloton TCX</title>
+</head>
+
+<body>
+    <h1>Fix Peloton TCX</h1>
+    <p>To get Peloton data into Garmin Connect, the easiest path is to connect Peloton and Strava via their built-in
+        integration, then export the original TCX from Strava and import it into Garmin.</p>
+    <p>Unfortunately, Garmin Connect won't correctly parse that TCX out of the box, because the TCX has some
+        non-standard aspects to it.</p>
+    <p>This script takes in one of those Peloton-to-Strava TCX files, fixes the aspects that Garmin Connect cannot
+        handle, and produces a new TCX file for import into Garmin.</p>
+    <form method=post enctype=multipart/form-data>
+        <input type=file name=file>
+        <input type=submit value="Upload TCX File">
+    </form>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li style="color: red">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <p style="text-align: right">Github source for this site and script: <a
+            href="https://github.com/dschafer/pelotontcxfixup/">https://github.com/dschafer/pelotontcxfixup/</a></p>
+</body>
+
+</html>
