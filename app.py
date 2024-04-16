@@ -20,9 +20,7 @@ def get_file(request: Request) -> FileStorage:
     filename = str(file.filename)
     if not filename:
         raise ValueError("No file provided.")
-    if "." not in filename:
-        raise ValueError("File must be a .tcx file.")
-    if filename.rsplit(".", 1)[1].lower() != "tcx":
+    if len(filename) <= 4 or filename[-4:] != ".tcx":
         raise ValueError("File must be a .tcx file.")
     return file
 
@@ -49,7 +47,7 @@ def home():
         logger.debug("TCX conversion complete.")
         logger.debug(f"Output size is {out_bytes_io.getbuffer().nbytes}.")
 
-        download_name = filename + ".fixed.tcx"
+        download_name = filename[:-4] + "_Fixed.tcx"
         logger.info(f"Conversion of {filename} complete, returning as {download_name}.")
         return send_file(out_bytes_io, as_attachment=True, download_name=download_name)
     return render_template("./index.html.jinja")
