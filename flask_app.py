@@ -32,7 +32,7 @@ def home():
             filename = secure_filename(str(file.filename))
             logger.debug(f"File {filename} successfully uploaded.")
         except ValueError as e:
-            logger.warn("Invalid file uploaded.", exc_info=e)
+            logger.warn(f"Invalid file uploaded: {str(e)}")
             flash("Invalid file.")
             return redirect(request.url)
 
