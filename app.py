@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from fixup import fix_tcx
 
 app = Flask(__name__)
+app.config.from_pyfile("config.cfg")
 logger = logging.getLogger(__name__)
 
 
