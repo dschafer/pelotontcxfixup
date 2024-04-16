@@ -25,10 +25,10 @@ def fix_tcx(infile: TextIO, outfile: BinaryIO) -> None:
     # Remove the creator tag, Garmin won't recognize that
     activity = root.find("./tcd:Activities/tcd:Activity", ns)
     if not activity:
-        raise Exception("No activity found")
+        raise ValueError("No activity found")
     creator = activity.find("./tcd:Creator", ns)
     if not creator:
-        raise Exception("No creator found")
+        raise ValueError("No creator found")
     try:
         activity.remove(creator)
     except Exception:
