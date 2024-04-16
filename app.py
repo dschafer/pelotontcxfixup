@@ -1,7 +1,9 @@
 from io import BytesIO, StringIO
 import logging
+from xml.etree.ElementTree import ParseError
 
 from flask import Flask, Request, flash, render_template, request, redirect, send_file
+from werkzeug import Response
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
@@ -25,29 +27,39 @@ def get_file(request: Request) -> FileStorage:
     return file
 
 
+def flash_and_redirect(request: Request, error_str: str) -> Response:
+    logger.warn(error_str)
+    flash(error_str)
+    return redirect(request.url)
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
         try:
             file = get_file(request)
-            filename = secure_filename(str(file.filename))
-            logger.debug(f"File {filename} successfully uploaded.")
         except ValueError as e:
-            logger.warn(f"Invalid file uploaded: {str(e)}")
-            flash(f"Invalid file uploaded: {str(e)}")
-            return redirect(request.url)
+            return flash_and_redirect(request, f"Invalid file uploaded: {str(e)}")
+        filename = secure_filename(str(file.filename))
+        logger.debug(f"File {filename} successfully uploaded.")
 
         try:
             in_string = str(file.stream.read(), encoding="utf-8")
-            logger.debug(f"Input size is {len(in_string)}.")
         except UnicodeDecodeError:
-            logger.warn("Invalid file uploaded: file was not a UTF-8 text file")
-            flash("Invalid file uploaded: file was not a UTF-8 text file")
-            return redirect(request.url)
+            return flash_and_redirect(
+                request, "Invalid file uploaded: file was not a UTF-8 text file."
+            )
+        logger.debug(f"Input size is {len(in_string)}.")
 
         logger.debug("Starting TCX conversion.")
         out_bytes_io = BytesIO()
-        fix_tcx(StringIO(in_string), out_bytes_io)
+        try:
+            fix_tcx(StringIO(in_string), out_bytes_io)
+        except ParseError:
+            return flash_and_redirect(
+                request,
+                "Invalid file uploaded: file was not a valid TCX XML doducment.",
+            )
         out_bytes_io.seek(0)
         logger.debug("TCX conversion complete.")
         logger.debug(f"Output size is {out_bytes_io.getbuffer().nbytes}.")
