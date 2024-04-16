@@ -29,26 +29,25 @@ def home():
     if request.method == "POST":
         try:
             file = get_file(request)
-            logger.info("File successfully read.")
-            logger.info(f"Filename was {secure_filename(str(file.filename))}.")
-        except ValueError:
-            logger.warn("Invalid file uploaded.")
+            filename = secure_filename(str(file.filename))
+            logger.debug(f"File {filename} successfully uploaded.")
+        except ValueError as e:
+            logger.warn("Invalid file uploaded.", exc_info=e)
             flash("Invalid file.")
             return redirect(request.url)
 
         in_string = str(file.stream.read(), encoding="utf-8")
-        logger.info(f"File size is {len(in_string)}.")
+        logger.debug(f"Input size is {len(in_string)}.")
 
-        logger.info("Starting TCX conversion.")
+        logger.debug("Starting TCX conversion.")
         out_bytes_io = BytesIO()
         fix_tcx(StringIO(in_string), out_bytes_io)
-        logger.info("TCX conversion complete.")
-        logger.info(f"Output size is {out_bytes_io.getbuffer().nbytes}.")
-
-        download_name = secure_filename(str(file.filename)) + ".fixed.tcx"
-        logger.info(f"Returning as {download_name}.")
-
         out_bytes_io.seek(0)
+        logger.debug("TCX conversion complete.")
+        logger.debug(f"Output size is {out_bytes_io.getbuffer().nbytes}.")
+
+        download_name = filename + ".fixed.tcx"
+        logger.info(f"Conversion of {filename} complete, returning as {download_name}.")
         return send_file(out_bytes_io, as_attachment=True, download_name=download_name)
     return """
     <!doctype html>
