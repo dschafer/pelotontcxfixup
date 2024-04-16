@@ -37,8 +37,13 @@ def home():
             flash(f"Invalid file uploaded: {str(e)}")
             return redirect(request.url)
 
-        in_string = str(file.stream.read(), encoding="utf-8")
-        logger.debug(f"Input size is {len(in_string)}.")
+        try:
+            in_string = str(file.stream.read(), encoding="utf-8")
+            logger.debug(f"Input size is {len(in_string)}.")
+        except UnicodeDecodeError:
+            logger.warn("Invalid file uploaded: file was not a UTF-8 text file")
+            flash("Invalid file uploaded: file was not a UTF-8 text file")
+            return redirect(request.url)
 
         logger.debug("Starting TCX conversion.")
         out_bytes_io = BytesIO()
